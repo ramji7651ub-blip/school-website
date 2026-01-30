@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin - Live Admissions</title>
+    <style>
+        body { font-family: sans-serif; background: #f8f9fa; padding: 30px; }
+        .container { max-width: 1000px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .live-dot { height: 10px; width: 10px; background-color: #2ecc71; border-radius: 50%; display: inline-block; animation: blink 1s infinite; }
+        @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
+        
+        table { width: 100%; border-collapse: collapse; background: white; }
+        th, td { border: 1px solid #dee2e6; padding: 15px; text-align: left; }
+        th { background-color: #343a40; color: white; }
+        tr:nth-child(even) { background-color: #f2f2f2; }
+        tr:hover { background-color: #e9ecef; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h2>Live Admission Records</h2>
+        <div><span class="live-dot"></span> Live Updating...</div>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Student Name</th>
+                <th>Father's Name</th>
+                <th>Mobile</th>
+                <th>D.O.B</th>
+                <th>Time</th>
+            </tr>
+        </thead>
+        <tbody id="adminTable">
+            </tbody>
+    </table>
+</div>
+
+<script>
+    async function loadData() {
+        try {
+            const res = await fetch('/api/data');
+            const records = await res.json();
+            const tableBody = document.getElementById('adminTable');
+            
+            tableBody.innerHTML = records.map(student => `
+                <tr>
+                    <td><strong>${student.name}</strong></td>
+                    <td>${student.father}</td>
+                    <td>${student.mobile}</td>
+                    <td>${student.dob}</td>
+                    <td><small>${student.timestamp}</small></td>
+                </tr>
+            `).join('');
+        } catch (err) {
+            console.error("Data load nahi ho paya", err);
+        }
+    }
+
+    // Har 5 second mein refresh
+    setInterval(loadData, 5000);
+    loadData(); // Pehli baar load karne ke liye
+</script>
+</body>
+</html>
+
